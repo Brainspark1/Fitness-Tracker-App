@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 // import { Head } from 'next/document';
 import Header from '../components/Header';
-
+import AchievementBadge from '../components/AchievementBadge';
+import AchievementPopup from '../components/AchievementPopup';
+import { ACHIEVEMENTS, getEarnedAchievements, checkAchievements, saveAchievements, AchievementData } from '../utils/achievements';
+import { useAchievements } from '../components/AchievementProvider';
+ 
 interface Profile {
   name: string;
   age: number;
@@ -21,17 +25,55 @@ export default function Profile() {
     goal: '',
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [earnedAchievements, setEarnedAchievements] = useState<any[]>([]);
+  const [newAchievements, setNewAchievements] = useState<any[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [currentPopupAchievement, setCurrentPopupAchievement] = useState<any>(null);
+  const { triggerAchievementCheck } = useAchievements();
 
   useEffect(() => {
     const savedProfile = localStorage.getItem('profile');
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile));
     }
+
+    // Load achievements
+    const achievements = getEarnedAchievements();
+    setEarnedAchievements(achievements);
+
+    // Check for new achievements
+    const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
+    const meals = JSON.parse(localStorage.getItem('meals') || '[]');
+    const data: AchievementData = { workouts, meals, profile: JSON.parse(savedProfile || '{}') };
+
+    const newEarned = checkAchievements(data);
+    if (newEarned.length > 0) {
+      saveAchievements(newEarned);
+      setNewAchievements(newEarned);
+      setEarnedAchievements([...achievements, ...newEarned]);
+
+      // Show popup for first new achievement
+      if (newEarned.length > 0) {
+        const achievement = ACHIEVEMENTS.find(a => a.id === newEarned[0].id);
+        if (achievement) {
+          setCurrentPopupAchievement(achievement);
+          setShowPopup(true);
+        }
+      }
+    }
   }, []);
 
   const saveProfile = (newProfile: Profile) => {
     localStorage.setItem('profile', JSON.stringify(newProfile));
     setProfile(newProfile);
+
+    // Check for achievements after saving profile
+    const savedWorkouts = localStorage.getItem('workouts');
+    const savedMeals = localStorage.getItem('meals');
+    const workouts = savedWorkouts ? JSON.parse(savedWorkouts) : [];
+    const meals = savedMeals ? JSON.parse(savedMeals) : [];
+    const data = { workouts, meals, profile: newProfile };
+    triggerAchievementCheck(data);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,6 +110,22 @@ export default function Profile() {
     }
   };
 
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    setCurrentPopupAchievement(null);
+
+    // Show next achievement if there are more
+    const remaining = newAchievements.slice(1);
+    if (remaining.length > 0) {
+      setNewAchievements(remaining);
+      const achievement = ACHIEVEMENTS.find(a => a.id === remaining[0].id);
+      if (achievement) {
+        setCurrentPopupAchievement(achievement);
+        setTimeout(() => setShowPopup(true), 500); // Small delay for better UX
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900">
       <Header />
@@ -96,7 +154,7 @@ export default function Profile() {
                     type="text"
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2"
+                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -106,7 +164,7 @@ export default function Profile() {
                     type="number"
                     value={profile.age}
                     onChange={(e) => setProfile({ ...profile, age: parseInt(e.target.value) })}
-                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2"
+                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -116,7 +174,7 @@ export default function Profile() {
                     type="number"
                     value={profile.height}
                     onChange={(e) => setProfile({ ...profile, height: parseInt(e.target.value) })}
-                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2"
+                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -126,7 +184,7 @@ export default function Profile() {
                     type="number"
                     value={profile.weight}
                     onChange={(e) => setProfile({ ...profile, weight: parseInt(e.target.value) })}
-                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2"
+                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                 </div>
@@ -135,7 +193,7 @@ export default function Profile() {
                   <select
                     value={profile.goal}
                     onChange={(e) => setProfile({ ...profile, goal: e.target.value })}
-                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2"
+                    className="mt-1 block w-full border border-gray-600 rounded-md px-3 py-2 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   >
                     <option value="">Select a goal</option>
@@ -206,6 +264,91 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Achievements */}
+        <div className="mt-12 bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">Achievements</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ACHIEVEMENTS.map((achievement) => {
+              const earned = earnedAchievements.find(ea => ea.id === achievement.id);
+              return (
+                <AchievementBadge
+                  key={achievement.id}
+                  title={achievement.title}
+                  description={achievement.description}
+                  icon={achievement.icon}
+                  earned={!!earned}
+                  earnedDate={earned?.earnedDate}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Data Management */}
+        <div className="mt-12 bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">Data Management</h3>
+          <p className="text-gray-300 mb-6">
+            Export your data for backup or import previously exported data.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <button
+              onClick={() => {
+                const data = {
+                  profile: localStorage.getItem('profile'),
+                  workouts: localStorage.getItem('workouts'),
+                  meals: localStorage.getItem('meals'),
+                  exportDate: new Date().toISOString(),
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fitness-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('Data exported successfully!');
+              }}
+              className="bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors font-medium"
+            >
+              Export All Data
+            </button>
+
+            <div>
+              <label htmlFor="import-file" className="block text-sm font-medium text-gray-300 mb-2">Import Data</label>
+              <input
+                id="import-file"
+                type="file"
+                accept=".json"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      try {
+                        const data = JSON.parse(event.target?.result as string);
+                        if (confirm('This will overwrite your current data. Are you sure you want to proceed?')) {
+                          if (data.profile) localStorage.setItem('profile', data.profile);
+                          if (data.workouts) localStorage.setItem('workouts', data.workouts);
+                          if (data.meals) localStorage.setItem('meals', data.meals);
+                          alert('Data imported successfully! Please refresh the page to see changes.');
+                          window.location.reload();
+                        }
+                      } catch (error) {
+                        alert('Invalid file format. Please select a valid backup file.');
+                      }
+                    };
+                    reader.readAsText(file);
+                  }
+                }}
+                className="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Danger Zone */}
         <div className="mt-12 bg-red-900/20 border border-red-500/50 rounded-lg p-6">
           <h3 className="text-xl font-semibold text-red-400 mb-4">Danger Zone</h3>
@@ -258,6 +401,16 @@ export default function Profile() {
             </button>
           </div>
         </div>
+
+        {/* Achievement Popup */}
+        {showPopup && currentPopupAchievement && (
+          <AchievementPopup
+            title={currentPopupAchievement.title}
+            description={currentPopupAchievement.description}
+            icon={currentPopupAchievement.icon}
+            onClose={handlePopupClose}
+          />
+        )}
       </main>
     </div>
   );

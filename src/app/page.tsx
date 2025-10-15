@@ -17,6 +17,8 @@ import {
   Legend,
 } from 'chart.js';
 import Header from './components/Header';
+import LoadingSkeleton from './components/LoadingSkeleton';
+import { useAchievements } from './components/AchievementProvider';
 
 ChartJS.register(
   CategoryScale,
@@ -63,32 +65,48 @@ export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname(); // 👈 Get current path
+  const { triggerAchievementCheck } = useAchievements();
 
   useEffect(() => {
-    const savedProfile = localStorage.getItem("profile");
-    const dismissed = localStorage.getItem("profilePopupDismissed");
+    const loadData = async () => {
+      setIsLoading(true);
+      // Simulate loading time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
-    } else if (!dismissed) {
-      // Show popup 2.5 seconds after visiting if no profile is set and not dismissed
-      const timer = setTimeout(() => {
-        setShowProfilePopup(true);
-      }, 2500);
-      return () => clearTimeout(timer);
-    }
+      const savedProfile = localStorage.getItem("profile");
+      const dismissed = localStorage.getItem("profilePopupDismissed");
 
-    const savedWorkouts = localStorage.getItem('workouts');
-    if (savedWorkouts) {
-      setWorkouts(JSON.parse(savedWorkouts));
-    }
+      if (savedProfile) {
+        setProfile(JSON.parse(savedProfile));
+      } else if (!dismissed) {
+        // Show popup 2.5 seconds after visiting if no profile is set and not dismissed
+        const timer = setTimeout(() => {
+          setShowProfilePopup(true);
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
 
-    const savedMeals = localStorage.getItem('meals');
-    if (savedMeals) {
-      setMeals(JSON.parse(savedMeals));
-    }
-  }, []);
+      const savedWorkouts = localStorage.getItem('workouts');
+      if (savedWorkouts) {
+        setWorkouts(JSON.parse(savedWorkouts));
+      }
+
+      const savedMeals = localStorage.getItem('meals');
+      if (savedMeals) {
+        setMeals(JSON.parse(savedMeals));
+      }
+
+      setIsLoading(false);
+
+      // Check for achievements after loading data
+      const data = { workouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : {} };
+      triggerAchievementCheck(data);
+    };
+
+    loadData();
+  }, [triggerAchievementCheck]);
 
   // 👇 Helper to style links dynamically
   const linkClass = (path: string) =>
@@ -200,17 +218,20 @@ export default function Home() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" style={{ paddingTop: showProfilePopup ? '5rem' : '3rem' }}>
-        <div className="text-center">
-          <h2 className="text-4xl font-extrabold text-white mb-4">
-            {profile?.name
-              ? `Hi ${profile.name}!`
-              : "Welcome to Your Fitness Journey"}
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Track your workouts, monitor your diet, and visualize your progress.
-          </p>
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : (
+          <div className="text-center">
+            <h2 className="text-4xl font-extrabold text-white mb-4">
+              {profile?.name
+                ? `Hi ${profile.name}!`
+                : "Welcome to Your Fitness Journey"}
+            </h2>
+            <p className="text-xl text-gray-300 mb-8">
+              Track your workouts, monitor your diet, and visualize your progress.
+            </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             {/* Workouts */}
             <div className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
               <h3 className="text-lg font-semibold text-white mb-2">Log Workouts</h3>
@@ -370,7 +391,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );

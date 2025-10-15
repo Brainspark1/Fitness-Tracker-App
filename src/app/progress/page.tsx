@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';  
 import Header from '../components/Header';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 
 interface Workout {
   id: string;
@@ -25,17 +26,28 @@ interface Meal {
 export default function Progress() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedWorkouts = localStorage.getItem('workouts');
-    if (savedWorkouts) {
-      setWorkouts(JSON.parse(savedWorkouts));
-    }
+    const loadData = async () => {
+      setIsLoading(true);
+      // Simulate loading time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const savedMeals = localStorage.getItem('meals');
-    if (savedMeals) {
-      setMeals(JSON.parse(savedMeals));
-    }
+      const savedWorkouts = localStorage.getItem('workouts');
+      if (savedWorkouts) {
+        setWorkouts(JSON.parse(savedWorkouts));
+      }
+
+      const savedMeals = localStorage.getItem('meals');
+      if (savedMeals) {
+        setMeals(JSON.parse(savedMeals));
+      }
+
+      setIsLoading(false);
+    };
+
+    loadData();
   }, []);
 
   // Calculate workout progress
@@ -71,9 +83,13 @@ export default function Progress() {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-3xl font-bold text-white mb-8">Your Progress</h2>
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : (
+          <>
+            <h2 className="text-3xl font-bold text-white mb-8">Your Progress</h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Workout Progress */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
             <h3 className="text-xl font-semibold text-white mb-4">Workout Progress</h3>
@@ -119,32 +135,34 @@ export default function Progress() {
           </div>
         </div>
 
-        {/* Summary Stats */}
-        <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
-          <h3 className="text-xl font-semibold text-white mb-4">Summary Statistics</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-400">{workouts.length}</p>
-              <p className="text-sm text-gray-300">Total Workouts</p>
+            {/* Summary Stats */}
+            <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
+              <h3 className="text-xl font-semibold text-white mb-4">Summary Statistics</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-400">{workouts.length}</p>
+                  <p className="text-sm text-gray-300">Total Workouts</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-400">{meals.length}</p>
+                  <p className="text-sm text-gray-300">Meals Logged</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {workouts.reduce((sum, w) => sum + w.weight * w.sets * w.reps, 0).toFixed(1)} lbs
+                  </p>
+                  <p className="text-sm text-gray-300">Total Weight Lifted</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-400">
+                    {meals.reduce((sum, m) => sum + m.calories, 0)}
+                  </p>
+                  <p className="text-sm text-gray-300">Total Calories</p>
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-400">{meals.length}</p>
-              <p className="text-sm text-gray-300">Meals Logged</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-yellow-400">
-                {workouts.reduce((sum, w) => sum + w.weight * w.sets * w.reps, 0).toFixed(1)} lbs
-              </p>
-              <p className="text-sm text-gray-300">Total Weight Lifted</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-400">
-                {meals.reduce((sum, m) => sum + m.calories, 0)}
-              </p>
-              <p className="text-sm text-gray-300">Total Calories</p>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </main>
     </div>
   );
