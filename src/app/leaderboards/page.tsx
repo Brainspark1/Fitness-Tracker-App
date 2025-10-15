@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Header from '../components/Header';
 
 interface UserStats {
@@ -11,6 +10,17 @@ interface UserStats {
   totalWeight: number;
   totalCalories: number;
   streak: number;
+}
+
+interface Workout {
+  weight: number;
+  sets: number;
+  reps: number;
+  date: string;
+}
+
+interface Meal {
+  calories: number;
 }
 
 export default function Leaderboards() {
@@ -45,8 +55,8 @@ export default function Leaderboards() {
       id: 'current',
       name: userName,
       totalWorkouts: workouts.length,
-      totalWeight: workouts.reduce((sum: number, w: any) => sum + (w.weight * w.sets * w.reps), 0),
-      totalCalories: meals.reduce((sum: number, m: any) => sum + m.calories, 0),
+      totalWeight: workouts.reduce((sum: number, w: Workout) => sum + (w.weight * w.sets * w.reps), 0),
+      totalCalories: meals.reduce((sum: number, m: Meal) => sum + m.calories, 0),
       streak: calculateStreak(workouts),
     };
 
@@ -57,7 +67,7 @@ export default function Leaderboards() {
     setLeaderboards(allUsers);
   }, []);
 
-  const calculateStreak = (workouts: any[]) => {
+  const calculateStreak = (workouts: Workout[]) => {
     // Simple streak calculation - consecutive days with workouts
     if (workouts.length === 0) return 0;
 

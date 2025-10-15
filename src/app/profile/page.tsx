@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Head } from 'next/document';
+// import { Head } from 'next/document';
 import Header from '../components/Header';
 
 interface Profile {
