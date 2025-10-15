@@ -61,12 +61,19 @@ export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
   const pathname = usePathname(); // 👈 Get current path
 
   useEffect(() => {
     const savedProfile = localStorage.getItem("profile");
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile));
+    } else {
+      // Show popup 5 seconds after visiting if no profile is set
+      const timer = setTimeout(() => {
+        setShowProfilePopup(true);
+      }, 2500);
+      return () => clearTimeout(timer);
     }
 
     const savedWorkouts = localStorage.getItem('workouts');
@@ -161,7 +168,32 @@ export default function Home() {
     <div className="min-h-screen bg-gray-900">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Profile Setup Popup */}
+      {showProfilePopup && (
+        <div className="fixed top-0 left-0 right-0 bg-blue-600 text-white p-4 z-50 flex justify-between items-center">
+          <div>
+            <p className="font-semibold">Welcome! Set up your profile to get started.</p>
+            <p className="text-sm">This will help personalize your fitness tracking experience.</p>
+          </div>
+          <div className="flex space-x-2">
+            <Link
+              href="/profile"
+              className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 font-medium"
+              onClick={() => setShowProfilePopup(false)}
+            >
+              Set Profile
+            </Link>
+            <button
+              onClick={() => setShowProfilePopup(false)}
+              className="text-white hover:text-gray-200 px-2"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" style={{ paddingTop: showProfilePopup ? '5rem' : '3rem' }}>
         <div className="text-center">
           <h2 className="text-4xl font-extrabold text-white mb-4">
             {profile?.name
