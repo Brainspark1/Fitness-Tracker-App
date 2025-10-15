@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🏋️‍♂️ Track — Smart Fitness Tracker
 
-## Getting Started
+Conrad Challenge 2025 | Coding Category
 
-First, run the development server:
+Developer: Nihaal Garud
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+⸻
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+💡 Project Summary
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Track is an all-in-one fitness tracking app that helps users monitor their workouts, meals, and progress through clear data and insights. Designed for accessibility and motivation, it allows users to log workouts and meals, view dashboards with personalized statistics, and share exported health data with doctors — all while earning achievements and comparing progress on leaderboards.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+⸻
 
-## Learn More
+🚀 Key Features
+	•	Workout Logging: Record exercises with type, duration, and calories.
+	•	Meal Tracking: Log meals, nutrition info, and calorie intake.
+	•	Dashboards & Stats: Visualize trends in fitness and diet over time.
+	•	Leaderboards: Compare with friends and stay motivated.
+	•	Achievements: Earn badges for consistency and milestones.
+	•	Export/Import Logs: Securely share data with doctors or transfer between devices.
 
-To learn more about Next.js, take a look at the following resources:
+⸻
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🧠 Innovation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Unlike typical fitness apps that isolate data, Track integrates workout, nutrition, and analytics into a single streamlined platform. It uses data visualization to give users a deeper understanding of their progress and bridges the gap between personal fitness and professional health review.
 
-## Deploy on Vercel
+⸻
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+⚙️ Tech Stack
+	•	Frontend: Next.js + React
+	•	Backend: Node.js / Express
+	•	Database: MongoDB
+	•	Visualization: Chart.js / Recharts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+⸻
+
+🌍 Impact
+
+Track promotes long-term healthy habits by turning daily fitness into engaging, measurable progress. Its doctor-friendly exports help bridge communication between individuals and healthcare providers, empowering smarter, data-driven health decisions.
+
+⸻
+
+🔜 Future Plans
+	•	Integration with Apple Health / Google Fit
+	•	AI-based workout and meal recommendations
+	•	Team and community challenges
