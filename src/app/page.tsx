@@ -62,14 +62,17 @@ export default function Home() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [popupDismissed, setPopupDismissed] = useState(false);
   const pathname = usePathname(); // 👈 Get current path
 
   useEffect(() => {
     const savedProfile = localStorage.getItem("profile");
+    const dismissed = localStorage.getItem("profilePopupDismissed");
+
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile));
-    } else {
-      // Show popup 5 seconds after visiting if no profile is set
+    } else if (!dismissed) {
+      // Show popup 2.5 seconds after visiting if no profile is set and not dismissed
       const timer = setTimeout(() => {
         setShowProfilePopup(true);
       }, 2500);
@@ -184,7 +187,10 @@ export default function Home() {
               Set Profile
             </Link>
             <button
-              onClick={() => setShowProfilePopup(false)}
+              onClick={() => {
+                setShowProfilePopup(false);
+                localStorage.setItem("profilePopupDismissed", "true");
+              }}
               className="text-white hover:text-gray-200 px-2"
             >
               ✕
