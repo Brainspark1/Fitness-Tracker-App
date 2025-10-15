@@ -25,10 +25,9 @@ Unlike typical fitness apps that isolate data, **Track** integrates **workout**,
 ---
 
 ## ⚙️ Tech Stack  
-- **Frontend:** Next.js + React  
-- **Backend:** Node.js / Express  
-- **Database:** MongoDB  
-- **Visualization:** Chart.js / Recharts  
+- Next.js
+- React
+- Visualization with Chart.js
 
 ---
 
