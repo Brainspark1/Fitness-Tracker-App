@@ -42,11 +42,3 @@ Unlike typical fitness apps that isolate data, **Track** integrates **workout**,
 - AI-based workout and meal recommendations  
 - Team and community challenges  
 
----
-
-## 🧑‍💻 About  
-**Project:** Track — Fitness Tracking App  
-**Category:** Coding  
-**Developer:** Nihaal Garud  
-
-> “Measure. Improve. Thrive.”  
