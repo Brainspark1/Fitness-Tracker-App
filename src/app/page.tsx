@@ -101,7 +101,7 @@ export default function Home() {
       setIsLoading(false);
 
       // Check for achievements after loading data
-      const data = { workouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : {} };
+      const data = { workouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : null };
       triggerAchievementCheck(data);
     };
 

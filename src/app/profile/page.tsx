@@ -25,10 +25,10 @@ export default function Profile() {
     goal: '',
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [earnedAchievements, setEarnedAchievements] = useState<any[]>([]);
-  const [newAchievements, setNewAchievements] = useState<any[]>([]);
+  const [earnedAchievements, setEarnedAchievements] = useState<{ id: string; earnedDate: string }[]>([]);
+  const [newAchievements, setNewAchievements] = useState<{ id: string; earnedDate: string }[]>([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [currentPopupAchievement, setCurrentPopupAchievement] = useState<any>(null);
+  const [currentPopupAchievement, setCurrentPopupAchievement] = useState<{ id: string; title: string; description: string; icon: string } | null>(null);
   const { triggerAchievementCheck } = useAchievements();
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Profile() {
     // Check for new achievements
     const workouts = JSON.parse(localStorage.getItem('workouts') || '[]');
     const meals = JSON.parse(localStorage.getItem('meals') || '[]');
-    const data: AchievementData = { workouts, meals, profile: JSON.parse(savedProfile || '{}') };
+    const data: AchievementData = { workouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : null };
 
     const newEarned = checkAchievements(data);
     if (newEarned.length > 0) {
@@ -336,7 +336,7 @@ export default function Profile() {
                           alert('Data imported successfully! Please refresh the page to see changes.');
                           window.location.reload();
                         }
-                      } catch (error) {
+                      } catch {
                         alert('Invalid file format. Please select a valid backup file.');
                       }
                     };

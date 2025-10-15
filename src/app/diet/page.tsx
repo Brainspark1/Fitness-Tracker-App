@@ -69,7 +69,7 @@ export default function Diet() {
     const savedProfile = localStorage.getItem('profile');
     const savedWorkouts = localStorage.getItem('workouts');
     const workouts = savedWorkouts ? JSON.parse(savedWorkouts) : [];
-    const data = { workouts, meals: newMeals, profile: savedProfile ? JSON.parse(savedProfile) : {} };
+    const data = { workouts, meals: newMeals, profile: savedProfile ? JSON.parse(savedProfile) : null };
     triggerAchievementCheck(data);
 
     setName('');

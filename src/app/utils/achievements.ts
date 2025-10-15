@@ -6,10 +6,37 @@ export interface Achievement {
   checkCondition: (data: AchievementData) => boolean;
 }
 
+export interface Workout {
+  id: string;
+  exercise: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  date: string;
+}
+
+export interface Meal {
+  id: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  date: string;
+}
+
+export interface Profile {
+  name: string;
+  age: number;
+  height: number;
+  weight: number;
+  goal: string;
+}
+
 export interface AchievementData {
-  workouts: any[];
-  meals: any[];
-  profile: any;
+  workouts: Workout[];
+  meals: Meal[];
+  profile: Profile | null;
 }
 
 export interface EarnedAchievement {
@@ -70,7 +97,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     title: 'Profile Master',
     description: 'Complete your profile setup',
     icon: '👤',
-    checkCondition: (data) => data.profile && data.profile.name && data.profile.age > 0,
+    checkCondition: (data) => data.profile !== null && Boolean(data.profile.name) && data.profile.age > 0,
   },
   {
     id: 'consistency-king',

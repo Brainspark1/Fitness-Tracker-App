@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import AchievementPopup from './AchievementPopup';
 import { ACHIEVEMENTS, checkAchievements, saveAchievements, AchievementData } from '../utils/achievements';
 
@@ -24,8 +24,8 @@ interface AchievementProviderProps {
 
 export default function AchievementProvider({ children }: AchievementProviderProps) {
   const [showPopup, setShowPopup] = useState(false);
-  const [currentAchievement, setCurrentAchievement] = useState<any>(null);
-  const [pendingAchievements, setPendingAchievements] = useState<any[]>([]);
+  const [currentAchievement, setCurrentAchievement] = useState<{ id: string; title: string; description: string; icon: string } | null>(null);
+  const [pendingAchievements, setPendingAchievements] = useState<{ id: string; earnedDate: string }[]>([]);
 
   const triggerAchievementCheck = (data: AchievementData) => {
     const newAchievements = checkAchievements(data);

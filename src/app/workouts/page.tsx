@@ -66,7 +66,7 @@ export default function Workouts() {
     const savedProfile = localStorage.getItem('profile');
     const savedMeals = localStorage.getItem('meals');
     const meals = savedMeals ? JSON.parse(savedMeals) : [];
-    const data = { workouts: newWorkouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : {} };
+    const data = { workouts: newWorkouts, meals, profile: savedProfile ? JSON.parse(savedProfile) : null };
     triggerAchievementCheck(data);
 
     setExercise('');
