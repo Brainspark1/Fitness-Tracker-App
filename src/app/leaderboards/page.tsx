@@ -117,14 +117,14 @@ export default function Leaderboards() {
     <div className="min-h-screen bg-gray-900">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
           <>
             <h2 className="text-3xl font-bold text-white mb-8">Leaderboards</h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {/* Overall Leaderboard */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700">
             <h3 className="text-xl font-semibold text-white mb-4">🏆 Overall Leaderboard</h3>
@@ -137,7 +137,7 @@ export default function Leaderboards() {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="text-lg font-bold">{getRankIcon(index)}</span>
+                    <span className="text-white font-bold">{getRankIcon(index)}</span>
                     <div>
                       <p className={`font-medium ${user.id === 'current' ? 'text-green-300' : 'text-white'}`}>
                         {user.name} {user.id === 'current' && '(You)'}
@@ -168,7 +168,7 @@ export default function Leaderboards() {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="text-lg font-bold">{getRankIcon(index)}</span>
+                    <span className="text-white font-bold">{getRankIcon(index)}</span>
                     <div>
                       <p className={`font-medium ${user.id === 'current' ? 'text-green-300' : 'text-white'}`}>
                         {user.name} {user.id === 'current' && '(You)'}
@@ -199,7 +199,7 @@ export default function Leaderboards() {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="text-lg font-bold">{getRankIcon(index)}</span>
+                    <span className="text-white font-bold">{getRankIcon(index)}</span>
                     <div>
                       <p className={`font-medium ${user.id === 'current' ? 'text-green-300' : 'text-white'}`}>
                         {user.name} {user.id === 'current' && '(You)'}
@@ -221,7 +221,7 @@ export default function Leaderboards() {
             <h3 className="text-xl font-semibold text-white mb-4">📊 Your Stats</h3>
             {currentUser && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2 md:gap-4">
                   <div className="text-center p-3 bg-green-900 rounded-lg border border-green-700">
                     <p className="text-2xl font-bold text-green-400">{currentUser.totalWorkouts}</p>
                     <p className="text-sm text-gray-300">Workouts</p>
